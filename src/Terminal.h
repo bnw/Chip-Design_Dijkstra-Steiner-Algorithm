@@ -13,6 +13,8 @@ public:
 
 	bool operator!=(Terminal const &rhs) const;
 
+	Position3D const &get_position() const;
+
 private:
 	Position3D const position;
 };
