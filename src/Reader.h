@@ -25,9 +25,9 @@ public:
 			std::getline(input, line_buffer);
 			std::istringstream line_stream(line_buffer);
 
-			Coordinate x, y, z;
+			Coord x, y, z;
 			line_stream >> x >> y >> z >> std::ws;
-			terminals.emplace_back(Position3D{x, y, z});
+			terminals.emplace_back(Position{x, y, z});
 			if (not line_stream.eof()) {
 				throw std::runtime_error("Data line contains more than 3 numbers.");
 			}

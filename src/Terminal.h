@@ -2,21 +2,21 @@
 #define CHIP_DESIGN_TERMINAL_H
 
 
-#include "Position3D.h"
+#include "Position.h"
 
 class Terminal
 {
 public:
-	Terminal(Position3D const &position);
+	Terminal(Position const &position);
 
 	bool operator==(Terminal const &rhs) const;
 
 	bool operator!=(Terminal const &rhs) const;
 
-	Position3D const &get_position() const;
+	Position const &get_position() const;
 
 private:
-	Position3D const position;
+	Position const position;
 };
 
 
