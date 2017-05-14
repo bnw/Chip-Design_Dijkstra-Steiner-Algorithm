@@ -1,6 +1,6 @@
 #include "HananGridGraph.h"
 
-namespace grid {
+namespace graph {
 
 void HananGridGraph::add_feasible_position(Position const &position)
 {

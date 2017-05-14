@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "../Position.h"
 
-namespace grid {
+namespace graph {
 
 class Node
 {

@@ -2,7 +2,7 @@
 #include "../../src/graph/HananGridGraph.h"
 #include "../../src/utils.h"
 
-using namespace grid;
+using namespace graph;
 
 struct SimpleGrid
 {

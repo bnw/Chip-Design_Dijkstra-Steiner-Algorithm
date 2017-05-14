@@ -1,6 +1,9 @@
 #ifndef CHIP_DESIGN_TYPEDEFS_H
 #define CHIP_DESIGN_TYPEDEFS_H
 
+#include <initializer_list>
+#include <string>
+
 using Coord = int;
 
 enum Dimension
@@ -13,6 +16,19 @@ enum Dimension
 
 auto const DIMENSIONS = {DIM_X, DIM_Y, DIM_Z};
 
-std::string to_string(Dimension const dimension);
+inline std::string to_string(Dimension const dimension){
+	switch (dimension) {
+		case DIM_X:
+			return "DIM_X";
+		case DIM_Y:
+			return "DIM_Y";
+		case DIM_Z:
+			return "DIM_Z";
+		case NUM_DIM:
+			return "NUM_DIM";
+		default:
+			abort();
+	}
+}
 
 #endif //CHIP_DESIGN_TYPEDEFS_H
