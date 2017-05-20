@@ -49,4 +49,13 @@ void append(ContainerA &target, ContainerB const &new_values)
 	target.insert(target.end(), new_values.begin(), new_values.end());
 }
 
+//TODO improve, if this becomes bottleneck
+inline size_t pow2(size_t const exponent){
+	size_t result = 1;
+	for(size_t i = 0; i < exponent; i++){
+		result *= 2;
+	}
+	return result;
+}
+
 #endif //COMBINATORIAL_OPTIMIZATION_UTILS_H
