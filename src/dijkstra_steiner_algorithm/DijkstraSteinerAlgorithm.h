@@ -37,13 +37,6 @@ public:
 		return std::tie(node, subset) < std::tie(rhs.node, rhs.subset);
 	}
 
-	size_t get_index(Instance const &instance) const
-	{
-		return
-				subset.get_index()
-				+ instance.graph.get_index(node) * pow2(instance.terminals.size());
-	}
-
 	graph::Node const node;
 	TerminalSubset const subset;
 };
@@ -66,11 +59,6 @@ public:
 
 		std::map<TerminalSubset, std::vector<graph::Node>> P;
 
-//		std::vector<Coord> l(
-//				instance.graph.num_nodes() * pow2(instance.terminals.size() + 1),
-//				std::numeric_limits<Coord>::max()
-//		);
-
 		auto T_minus_t = TerminalSubset::create_empty(instance.terminals);
 		for (auto const &terminal : instance.terminals) {
 			if (terminal != instance.t) {
@@ -87,7 +75,6 @@ public:
 							TerminalSubset::create_singleton(terminal, instance.terminals)
 					};
 			labels.set(node_plus_subset, 0);
-//			l.at(node_plus_subset.get_index(instance)) = 0;
 			heap.insert(lower_bound(node_plus_subset), node_plus_subset);
 		}
 
@@ -175,8 +162,27 @@ private:
 		labels.set(v_I, new_l_value);
 	}
 
-	Coord lower_bound(NodePlusTerminalSubset) const
-	{ return 0; }
+	Coord lower_bound(NodePlusTerminalSubset const& node_plus_terminal_subset) const
+	{
+		return bounding_box(node_plus_terminal_subset.subset) / 2;
+	}
+
+	Coord bounding_box(TerminalSubset const &terminal_subset) const
+	{
+		Coord sum = 0;
+		for (auto const &dimension : DIMENSIONS) {
+			Coord max = std::numeric_limits<Coord>::min();
+			Coord min = std::numeric_limits<Coord>::max();
+			for (auto const &terminal : instance.terminals) {
+				if (terminal_subset.contains(terminal)) {
+					max = std::max(max, terminal.get_position().coord(dimension));
+					min = std::min(min, terminal.get_position().coord(dimension));
+				}
+			}
+			sum += max - min;
+		}
+		return sum * 2;
+	}
 
 	Instance const &instance;
 	Labels labels;
