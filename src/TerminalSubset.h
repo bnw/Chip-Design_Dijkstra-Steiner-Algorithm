@@ -80,6 +80,10 @@ public:
 		return true;
 	}
 
+	bool contains(Terminal const& terminal) const{
+		return incidence_vector.at(terminal.get_index());
+	}
+
 	bool operator<(TerminalSubset const &rhs) const
 	{
 		return incidence_vector < rhs.incidence_vector;
