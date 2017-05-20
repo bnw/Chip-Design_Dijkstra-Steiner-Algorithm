@@ -3,11 +3,14 @@
 
 #include <string>
 #include <array>
+#include <vector>
 #include "typedefs.h"
 
 class Position
 {
 public:
+	using Vector = std::vector<Position>;
+
 	Coord coord(Dimension const dimension) const
 	{
 		return coordinates.at(dimension);
@@ -27,6 +30,15 @@ public:
 
 		string_representation += "]";
 		return string_representation;
+	}
+
+	Coord distance(Position const &other) const
+	{
+		Coord distance = 0;
+		for (auto const &dimension : DIMENSIONS) {
+			distance += std::abs(coord(dimension) - other.coord(dimension));
+		}
+		return distance;
 	}
 
 	bool operator==(Position const &rhs) const;
