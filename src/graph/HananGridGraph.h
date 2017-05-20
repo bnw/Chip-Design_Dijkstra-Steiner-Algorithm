@@ -31,7 +31,7 @@ public:
 
 	bool operator==(Node const &rhs) const
 	{
-		return get_position() == rhs.get_position();
+		return coordinate_iterators == rhs.coordinate_iterators;
 	}
 
 	Coord distance(Node const& other) const{
