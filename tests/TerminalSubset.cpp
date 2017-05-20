@@ -46,3 +46,10 @@ BOOST_FIXTURE_TEST_CASE(TestTerminalSubset_plus, TerminalSubsetFixture)
 	BOOST_CHECK(full == TerminalSubset(full).plus(singleton_0));
 	BOOST_CHECK(full == TerminalSubset(singleton_0).plus(full));
 }
+
+BOOST_FIXTURE_TEST_CASE(TestTerminalSubset_create_nonempty_subsets, TerminalSubsetFixture)
+{
+	BOOST_TEST(0 == empty.create_nonempty_subsets().size());
+	auto const debug = full.create_nonempty_subsets();
+	BOOST_TEST(pow2(terminals.size()) - 1 == debug.size());
+}

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "HananGridGraph.h"
 
 namespace graph {
@@ -5,7 +6,13 @@ namespace graph {
 void HananGridGraph::add_feasible_position(Position const &position)
 {
 	for (auto const dimension : DIMENSIONS) {
-		coordinates(dimension).emplace(position.coord(dimension));
+		auto& dimension_coordinates = coordinates(dimension);
+		auto const& new_value = position.coord(dimension);
+		auto const insertion_position
+				= std::lower_bound(dimension_coordinates.begin(), dimension_coordinates.end(), new_value);
+		if(insertion_position == dimension_coordinates.end() or *insertion_position != new_value){
+			dimension_coordinates.insert(insertion_position, position.coord(dimension));
+		}
 	}
 }
 
@@ -32,7 +39,8 @@ Node HananGridGraph::create_node(Position const &position) const
 {
 	std::array<HananGridGraph::Coordinates::const_iterator, NUM_DIM> coordinate_iterators;
 	for (auto const dimension : DIMENSIONS) {
-		coordinate_iterators.at(dimension) = coordinates(dimension).find(position.coord(dimension));
+		coordinate_iterators.at(dimension)
+				= std::lower_bound(coordinates(dimension).begin(), coordinates(dimension).end(), position.coord(dimension));
 		assert(coordinate_iterators.at(dimension) != coordinates(dimension).end());
 	}
 	return  {coordinate_iterators};
@@ -47,5 +55,6 @@ HananGridGraph::Coordinates const &HananGridGraph::coordinates(Dimension const d
 {
 	return dimension_coordinates.at(dimension);
 }
+
 
 }

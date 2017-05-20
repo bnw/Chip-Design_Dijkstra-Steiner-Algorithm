@@ -14,9 +14,9 @@ public:
 	std::vector<Terminal> read(std::istream &input) const
 	{
 		std::vector<Terminal> terminals;
-		int n;
+		size_t n;
 		input >> n;
-		for (int i = 0; i < n; i++) {
+		for (size_t i = 0; i < n; i++) {
 			input >> std::ws;
 			if (input.eof()) {
 				throw std::runtime_error("Input contains less than " + std::to_string(n) + " data rows.");
@@ -27,7 +27,7 @@ public:
 
 			Coord x, y, z;
 			line_stream >> x >> y >> z >> std::ws;
-			terminals.emplace_back(Position{x, y, z});
+			terminals.emplace_back(Position{x, y, z}, i);
 			if (not line_stream.eof()) {
 				throw std::runtime_error("Data line contains more than 3 numbers.");
 			}

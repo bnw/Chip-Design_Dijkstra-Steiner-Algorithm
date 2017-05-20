@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(TestReaderGoodInput){
 	std::istringstream input("3\n1 2 3\n4 5 6 \n7 8 9\n");
 	std::vector<Terminal> terminals;
 	BOOST_CHECK_NO_THROW(terminals = reader.read(input));
-	std::vector<Terminal> const expected_terminals = {{{1,2,3}},{{4,5,6}},{{7,8,9}}};
+	std::vector<Terminal> const expected_terminals = {{{1,2,3}, 0},{{4,5,6}, 1},{{7,8,9}, 2}};
 	BOOST_TEST(terminals == expected_terminals);
 }
 

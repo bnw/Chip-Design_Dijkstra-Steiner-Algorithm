@@ -2,7 +2,7 @@
 
 #include "Terminal.h"
 
-Terminal::Terminal(Position const &position) : position(position)
+Terminal::Terminal(Position const &position, Terminal::Index const index) : position(position), index(index)
 {}
 
 bool Terminal::operator==(Terminal const &rhs) const
@@ -18,4 +18,9 @@ bool Terminal::operator!=(Terminal const &rhs) const
 Position const &Terminal::get_position() const
 {
 	return position;
+}
+
+Terminal::Index const Terminal::get_index() const
+{
+	return index;
 }

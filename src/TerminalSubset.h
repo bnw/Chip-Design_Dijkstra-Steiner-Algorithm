@@ -2,6 +2,7 @@
 #define CHIP_DESIGN_TERMINALSUBSET_H
 
 #include <vector>
+#include <assert.h>
 #include "Terminal.h"
 #include "utils.h"
 
@@ -26,7 +27,7 @@ public:
 		return terminal_subset;
 	}
 
-	TerminalSubset& minus(TerminalSubset const &subtrahend)
+	TerminalSubset &minus(TerminalSubset const &subtrahend)
 	{
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
 			if (subtrahend.incidence_vector.at(i)) {
@@ -36,7 +37,7 @@ public:
 		return *this;
 	}
 
-	TerminalSubset& plus(TerminalSubset const &addend)
+	TerminalSubset &plus(TerminalSubset const &addend)
 	{
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
 			if (addend.incidence_vector.at(i)) {
@@ -84,31 +85,50 @@ public:
 		return incidence_vector < rhs.incidence_vector;
 	}
 
-//	size_t max_size() const
-//	{
-//		return incidence_vector.size();
-//	}
-//
-//	std::vector<TerminalSubset> const create_nonempty_subsets() const
-//	{
-//		auto copy = *this;
-//		for (size_t i = 0; i < incidence_vector.size(); i++) {
-//			if (incidence_vector.at(i)) {
-//				std::vector<TerminalSubset> non_empty_subsets;
-//				copy.incidence_vector.at(i) = false;
-//				auto subsets_without_i = copy.create_nonempty_subsets();
-//				append(non_empty_subsets, subsets_without_i);
-//				for (auto &subset:subsets_without_i) {
-//					subset.incidence_vector.at(i) = true;
-//				}
-//				append(non_empty_subsets, subsets_without_i);
-//				return non_empty_subsets;
-//			}
-//		}
-//		return {};
-//	}
+	size_t max_size() const
+	{
+		return incidence_vector.size();
+	}
+
+	//only used for unit tests
+	std::vector<TerminalSubset> const create_nonempty_subsets() const
+	{
+		if (is_singleton()) {
+			return {*this};
+		}
+
+		std::vector<TerminalSubset> non_empty_subsets;
+
+		auto copy = *this;
+		for (size_t i = 0; i < incidence_vector.size(); i++) {
+			if (incidence_vector.at(i)) {
+				assert(incidence_vector.at(i) == copy.incidence_vector.at(i));
+				copy.incidence_vector.at(i) = false;
+				auto subsets_without_i = copy.create_nonempty_subsets();
+				append(non_empty_subsets, subsets_without_i);
+				for (auto &subset:subsets_without_i) {
+					subset.incidence_vector.at(i) = true;
+				}
+				append(non_empty_subsets, subsets_without_i);
+				auto const i_th_singleton = TerminalSubset{*this}.minus(copy);
+				non_empty_subsets.push_back(i_th_singleton);
+				return non_empty_subsets;
+			}
+		}
+
+		return {};
+	}
 
 private:
+	bool is_singleton() const
+	{
+		size_t sum = 0;
+		for (auto const b : incidence_vector) {
+			sum += b;
+		}
+		return sum == 1;
+	}
+
 	TerminalSubset(Terminal::Vector const &terminals, bool initial_value) :
 			incidence_vector(terminals.size(), initial_value)
 	{}
