@@ -30,8 +30,8 @@ public:
 	TerminalSubset &minus(TerminalSubset const &subtrahend)
 	{
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
-			if (subtrahend.incidence_vector.at(i)) {
-				incidence_vector.at(i) = false;
+			if (subtrahend.incidence_vector[i]) {
+				incidence_vector[i] = false;
 			}
 		}
 		return *this;
@@ -40,8 +40,8 @@ public:
 	TerminalSubset &plus(TerminalSubset const &addend)
 	{
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
-			if (addend.incidence_vector.at(i)) {
-				incidence_vector.at(i) = true;
+			if (addend.incidence_vector[i]) {
+				incidence_vector[i] = true;
 			}
 		}
 		return *this;
@@ -49,14 +49,14 @@ public:
 
 	void add(Terminal const &terminal)
 	{
-		incidence_vector.at(terminal.get_index()) = true;
+		incidence_vector[terminal.get_index()] = true;
 	}
 
 	size_t get_index() const
 	{
 		size_t index = 0;
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
-			if (incidence_vector.at(i)) {
+			if (incidence_vector[i]) {
 				index += pow2(i);
 			}
 		}
@@ -71,8 +71,8 @@ public:
 	bool contains(TerminalSubset const &other) const
 	{
 		for (size_t i = 0; i < incidence_vector.size(); i++) {
-			if (not incidence_vector.at(i)) {
-				if (other.incidence_vector.at(i)) {
+			if (not incidence_vector[i]) {
+				if (other.incidence_vector[i]) {
 					return false;
 				}
 			}
@@ -81,7 +81,7 @@ public:
 	}
 
 	bool contains(Terminal const& terminal) const{
-		return incidence_vector.at(terminal.get_index());
+		return incidence_vector[terminal.get_index()];
 	}
 
 	bool operator<(TerminalSubset const &rhs) const
@@ -126,7 +126,7 @@ public:
 	TerminalSubset complement() const{
 		TerminalSubset copy = *this;
 		for(size_t i = 0; i < incidence_vector.size(); i++){
-			copy.incidence_vector.at(i) = not copy.incidence_vector.at(i);
+			copy.incidence_vector[i] = not copy.incidence_vector[i];
 		}
 		return copy;
 	}
