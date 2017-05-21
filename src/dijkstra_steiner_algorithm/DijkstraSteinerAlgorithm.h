@@ -58,7 +58,6 @@ public:
 		);
 
 		std::vector<std::vector<TerminalSubset>> P(instance.graph.num_nodes());
-		//std::map<TerminalSubset, std::vector<graph::Node>> P;
 
 		auto T_minus_t = TerminalSubset::create_empty(instance.terminals);
 		for (auto const &terminal : instance.terminals) {
@@ -75,8 +74,7 @@ public:
 							instance.graph.create_node(terminal.get_position()),
 							TerminalSubset::create_singleton(terminal, instance.terminals)
 					};
-			labels.set(node_plus_subset, 0);
-			heap.insert(lower_bound(node_plus_subset), node_plus_subset);
+			update_l(heap, node_plus_subset, 0);
 		}
 
 
@@ -149,28 +147,25 @@ private:
 	)
 	{
 		Coord const old_value = labels.get(v_I);
-		Coord const lb = lower_bound(v_I);
-		if (heap.contains(old_value + lb, v_I)) {
-			heap.key_decreased(old_value + lb, v_I, new_l_value + lb);
-		} else {
-			heap.insert(new_l_value + lb, v_I);
-		}
+		Coord const lb = lower_bound({v_I.node, v_I.subset.complement()});
+		heap.erase_if_exists(old_value + lb, v_I);
+		heap.insert(new_l_value + lb, v_I);
 		labels.set(v_I, new_l_value);
 	}
 
-	Coord lower_bound(NodePlusTerminalSubset const &node_plus_terminal_subset) const
+	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset) const
 	{
-		return bounding_box(node_plus_terminal_subset.subset) / 2;
+		return bounding_box(node_plus_terminal_subset) / 2;
 	}
 
-	Coord bounding_box(TerminalSubset const &terminal_subset) const
+	Coord bounding_box(NodePlusTerminalSubset const &node_plus_terminal_subset) const
 	{
 		Coord sum = 0;
 		for (auto const &dimension : DIMENSIONS) {
-			Coord max = std::numeric_limits<Coord>::min();
-			Coord min = std::numeric_limits<Coord>::max();
+			Coord max = node_plus_terminal_subset.node.get_position().coord(dimension);
+			Coord min = max;
 			for (auto const &terminal : instance.terminals) {
-				if (terminal_subset.contains(terminal)) {
+				if (node_plus_terminal_subset.subset.contains(terminal)) {
 					max = std::max(max, terminal.get_position().coord(dimension));
 					min = std::min(min, terminal.get_position().coord(dimension));
 				}

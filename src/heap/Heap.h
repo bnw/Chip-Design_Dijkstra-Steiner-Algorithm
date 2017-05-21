@@ -37,11 +37,9 @@ public:
 		data.insert({key, element});
 	};
 
-	virtual void key_decreased(KeyType const &old_key, DataType const &element, KeyType const &new_key)
+	virtual void erase_if_exists(KeyType const &key, DataType const &element)
 	{
-		auto const num_erased = data.erase({old_key, element});
-		assert(num_erased != 0);
-		data.insert({new_key, element});
+		data.erase({key, element});
 	};
 
 	virtual bool contains(KeyType const &key, DataType const &element) const

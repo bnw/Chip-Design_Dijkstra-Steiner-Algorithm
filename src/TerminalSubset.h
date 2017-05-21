@@ -123,6 +123,14 @@ public:
 		return {};
 	}
 
+	TerminalSubset complement() const{
+		TerminalSubset copy = *this;
+		for(size_t i = 0; i < incidence_vector.size(); i++){
+			copy.incidence_vector.at(i) = not copy.incidence_vector.at(i);
+		}
+		return copy;
+	}
+
 private:
 	bool is_singleton() const
 	{
