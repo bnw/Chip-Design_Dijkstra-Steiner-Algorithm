@@ -57,7 +57,8 @@ public:
 				}
 		);
 
-		std::map<TerminalSubset, std::vector<graph::Node>> P;
+		std::vector<std::vector<TerminalSubset>> P(instance.graph.num_nodes());
+		//std::map<TerminalSubset, std::vector<graph::Node>> P;
 
 		auto T_minus_t = TerminalSubset::create_empty(instance.terminals);
 		for (auto const &terminal : instance.terminals) {
@@ -92,8 +93,8 @@ public:
 			auto const &I = v_I.subset;
 
 			bool contained_in_P = false;
-			for (auto const &node : P[I]) {
-				if (node == v) {
+			for (auto const &subset : P.at(instance.graph.get_index(v))) {
+				if (subset == I) {
 					contained_in_P = true;
 					break;
 				}
@@ -102,7 +103,7 @@ public:
 
 			// Line 4
 
-			P[I].push_back(v);
+			P.at(instance.graph.get_index(v)).push_back(I);
 
 			// Line 5
 			if (v.get_position() == instance.t.get_position() and I == T_minus_t) {
@@ -123,22 +124,17 @@ public:
 					TerminalSubset::create_full(instance.terminals)
 							.minus(I)
 							.minus(TerminalSubset::create_singleton(instance.t, instance.terminals));
-			for (auto const subset_with_nodes : P) {
-				auto const &J = subset_with_nodes.first;
+			for (auto const &J : P.at(instance.graph.get_index(v))) {
 				if (T_minus_I_and_t.contains(J)) {
-					for (auto const &node : subset_with_nodes.second) {
-						if (node == v) {
-							auto const I_union_J = TerminalSubset{I}.plus(J);
-							NodePlusTerminalSubset const v_I_union_J = {v, I_union_J};
-							Coord new_l_value =
-									std::min(
-											labels.get(v_I_union_J),
-											labels.get(v_I)
-											+ labels.get(NodePlusTerminalSubset{v, J})
-									);
-							update_l(heap, v_I_union_J, new_l_value);
-						}
-					}
+					auto const I_union_J = TerminalSubset{I}.plus(J);
+					NodePlusTerminalSubset const v_I_union_J = {v, I_union_J};
+					Coord new_l_value =
+							std::min(
+									labels.get(v_I_union_J),
+									labels.get(v_I)
+									+ labels.get(NodePlusTerminalSubset{v, J})
+							);
+					update_l(heap, v_I_union_J, new_l_value);
 				}
 			}
 		}
@@ -162,7 +158,7 @@ private:
 		labels.set(v_I, new_l_value);
 	}
 
-	Coord lower_bound(NodePlusTerminalSubset const& node_plus_terminal_subset) const
+	Coord lower_bound(NodePlusTerminalSubset const &node_plus_terminal_subset) const
 	{
 		return bounding_box(node_plus_terminal_subset.subset) / 2;
 	}
