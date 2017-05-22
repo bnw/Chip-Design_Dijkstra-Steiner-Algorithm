@@ -2,8 +2,6 @@
 #define CHIP_DESIGN_DIJKSTRASTEINERALGORITHM_H
 
 
-#include <map>
-#include <iostream>
 #include "../graph/HananGridGraph.h"
 #include "../Terminal.h"
 #include "../heap/Heap.h"
