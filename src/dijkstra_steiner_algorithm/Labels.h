@@ -4,12 +4,11 @@
 
 #include "../graph/HananGridGraph.h"
 #include "../TerminalSubset.h"
+#include "NodePlusTerminalSubset.h"
 
 namespace dijkstra_steiner_algorithm {
 
 class Instance;
-
-class NodePlusTerminalSubset;
 
 class Labels
 {

@@ -10,37 +10,9 @@
 #include "Labels.h"
 #include "lower_bound/BoundingBoxLowerBound.h"
 #include "lower_bound/MinimumSpanningTreeLowerBound.h"
+#include "Instance.h"
 
 namespace dijkstra_steiner_algorithm {
-
-class Instance
-{
-public:
-	static Instance create(Terminal::Vector const &terminals)
-	{
-		Position::Vector positions;
-		for (auto const &terminal:terminals) {
-			positions.push_back(terminal.get_position());
-		}
-		return {graph::HananGridGraph{positions}, terminals, terminals.front()};
-	}
-
-	graph::HananGridGraph const graph;
-	Terminal::Vector const &terminals; // contains t
-	Terminal const &t;
-};
-
-class NodePlusTerminalSubset
-{
-public:
-	bool operator<(NodePlusTerminalSubset const &rhs) const
-	{
-		return std::tie(node, subset) < std::tie(rhs.node, rhs.subset);
-	}
-
-	graph::Node const node;
-	TerminalSubset const subset;
-};
 
 class DijkstraSteinerAlgorithm
 {
