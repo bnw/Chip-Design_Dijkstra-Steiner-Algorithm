@@ -3,6 +3,7 @@
 
 
 #include <map>
+#include <iostream>
 #include "../graph/HananGridGraph.h"
 #include "../Terminal.h"
 #include "../heap/Heap.h"
@@ -10,6 +11,7 @@
 #include "../TerminalSubset.h"
 #include "Labels.h"
 #include "lower_bound/BoundingBoxLowerBound.h"
+#include "lower_bound/MinimumSpanningTreeLowerBound.h"
 
 namespace dijkstra_steiner_algorithm {
 
@@ -49,8 +51,8 @@ public:
 			instance(instance),
 			labels(instance),
 			heap(),
-			P(instance.graph.num_nodes()),
-			lower_bound_oracle(instance.terminals)
+			lower_bound_oracle_bb(instance.terminals),
+			lower_bound_oracle_mst(instance.terminals)
 	{}
 
 	Coord calculate_minimum_steiner_tree_length()
@@ -86,18 +88,12 @@ public:
 			auto const &I = v_I.subset;
 			auto const label_of_v_I = labels.get(v_I);
 
-			bool contained_in_P = false;
-			for (auto const &subset : P.at(instance.graph.get_index(v))) {
-				if (subset == I) {
-					contained_in_P = true;
-					break;
-				}
+			if (labels.is_permanently_labeled(v_I)) {
+				continue;
 			}
-			if (contained_in_P) { continue; }
 
 			// Line 4
-
-			P.at(instance.graph.get_index(v)).push_back(I);
+			labels.mark_permanently_labeled(v_I);
 
 			// Line 5
 			if (v.get_position() == instance.t.get_position() and I == T_minus_t) {
@@ -125,7 +121,7 @@ private:
 			Coord const label_of_v_I
 	)
 	{
-		for (auto const &J : P.at(instance.graph.get_index(v))) {
+		for (auto const &J : labels.get_permanently_labeled_subsets_for_node(v)) {
 			if (T_minus_I_and_t.contains(J)) {
 				auto const I_union_J = TerminalSubset{I}.plus(J);
 				NodePlusTerminalSubset const v_I_union_J = {v, I_union_J};
@@ -139,7 +135,8 @@ private:
 		}
 	}
 
-	void update_neighbors(graph::Node const& v, TerminalSubset const& I,Coord const label_of_v_I){
+	void update_neighbors(graph::Node const &v, TerminalSubset const &I, Coord const label_of_v_I)
+	{
 		for (auto const &neighbor : instance.graph.neighbors(v)) {
 			Coord new_l_value = label_of_v_I + v.distance(neighbor);
 			NodePlusTerminalSubset const w_I = {neighbor, I};
@@ -164,14 +161,23 @@ private:
 
 	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset)
 	{
-		return lower_bound_oracle.lower_bound(node_plus_terminal_subset.node, node_plus_terminal_subset.subset);
+		return std::max(
+				lower_bound_oracle_mst.lower_bound(
+						node_plus_terminal_subset.node,
+						node_plus_terminal_subset.subset
+				),
+				lower_bound_oracle_bb.lower_bound(
+						node_plus_terminal_subset.node,
+						node_plus_terminal_subset.subset
+				)
+		);
 	}
 
 	Instance const &instance;
 	Labels labels;
 	heap::Heap<Coord, NodePlusTerminalSubset> heap;
-	std::vector<std::vector<TerminalSubset>> P;
-	lower_bound::BoundingBoxLowerBound lower_bound_oracle;
+	lower_bound::BoundingBoxLowerBound lower_bound_oracle_bb;
+	lower_bound::MinimumSpanningTreeLowerBound lower_bound_oracle_mst;
 };
 
 }
