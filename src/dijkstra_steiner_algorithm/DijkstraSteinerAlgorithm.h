@@ -9,6 +9,7 @@
 #include "../utils.h"
 #include "../TerminalSubset.h"
 #include "Labels.h"
+#include "lower_bound/BoundingBoxLowerBound.h"
 
 namespace dijkstra_steiner_algorithm {
 
@@ -48,7 +49,8 @@ public:
 			instance(instance),
 			labels(instance),
 			heap(),
-			P(instance.graph.num_nodes())
+			P(instance.graph.num_nodes()),
+			lower_bound_oracle(instance.terminals)
 	{}
 
 	Coord calculate_minimum_steiner_tree_length()
@@ -160,32 +162,16 @@ private:
 		labels.set(v_I, new_l_value);
 	}
 
-	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset) const
+	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset)
 	{
-		return bounding_box(node_plus_terminal_subset);
-	}
-
-	Coord bounding_box(NodePlusTerminalSubset const &node_plus_terminal_subset) const
-	{
-		Coord sum = 0;
-		for (auto const &dimension : DIMENSIONS) {
-			Coord max = node_plus_terminal_subset.node.get_position().coord(dimension);
-			Coord min = max;
-			for (auto const &terminal : instance.terminals) {
-				if (node_plus_terminal_subset.subset.contains(terminal)) {
-					max = std::max(max, terminal.get_position().coord(dimension));
-					min = std::min(min, terminal.get_position().coord(dimension));
-				}
-			}
-			sum += max - min;
-		}
-		return sum;
+		return lower_bound_oracle.lower_bound(node_plus_terminal_subset.node, node_plus_terminal_subset.subset);
 	}
 
 	Instance const &instance;
 	Labels labels;
 	heap::Heap<Coord, NodePlusTerminalSubset> heap;
 	std::vector<std::vector<TerminalSubset>> P;
+	lower_bound::BoundingBoxLowerBound lower_bound_oracle;
 };
 
 }

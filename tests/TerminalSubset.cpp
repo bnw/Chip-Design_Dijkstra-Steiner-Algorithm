@@ -1,19 +1,11 @@
 #include <boost/test/unit_test.hpp>
 #include "../src/TerminalSubset.h"
+#include "fixtures/general_fixtures.h"
 
-struct TerminalSubsetFixture
-{
-	Terminal::Vector const terminals = {
-			{{1, 1, 1}, 0},
-			{{2, 2, 2}, 1},
-			{{3, 3, 3}, 2}
-	};
-	TerminalSubset const full = TerminalSubset::create_full(terminals);
-	TerminalSubset const empty = TerminalSubset::create_empty(terminals);
-	TerminalSubset const singleton_0 = TerminalSubset::create_singleton(terminals.at(0), terminals);
-	TerminalSubset const singleton_1 = TerminalSubset::create_singleton(terminals.at(1), terminals);
-	TerminalSubset const singleton_2 = TerminalSubset::create_singleton(terminals.at(2), terminals);
-};
+
+
+struct TerminalSubsetFixture : public ThreeTerminalsFixture
+{};
 
 BOOST_FIXTURE_TEST_CASE(TestTerminalSubset_get_index, TerminalSubsetFixture)
 {
