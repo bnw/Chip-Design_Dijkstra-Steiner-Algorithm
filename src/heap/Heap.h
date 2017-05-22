@@ -14,22 +14,25 @@ class Heap
 private:
 	struct DataEntry
 	{
+		bool operator<(DataEntry const &rhs) const
+		{
+			// This is faster than std::tie
+			if (key < rhs.key) {
+				return true;
+			} else if (key > rhs.key) {
+				return false;
+			} else {
+				return data < rhs.data;
+			}
+		}
+
 		KeyType key;
 		DataType data;
 	};
 
 public:
-	Heap(std::function<bool(DataType const &, DataType const &)> const &data_compare_function) :
-			compare_function([data_compare_function](DataEntry const &lhs, DataEntry const &rhs) -> bool {
-				if (lhs.key < rhs.key) {
-					return true;
-				} else if (lhs.key > rhs.key) {
-					return false;
-				} else {
-					return data_compare_function(lhs.data, rhs.data);
-				}
-			}),
-			data(compare_function)
+	Heap() :
+			data()
 	{}
 
 	virtual void insert(KeyType const &key, DataType const &element)
@@ -56,8 +59,7 @@ public:
 	};
 
 private:
-	std::function<bool(DataEntry const &, DataEntry const &)> compare_function;
-	std::set<DataEntry, std::function<bool(DataEntry const &, DataEntry const &)> > data;
+	std::set<DataEntry> data;
 };
 
 }

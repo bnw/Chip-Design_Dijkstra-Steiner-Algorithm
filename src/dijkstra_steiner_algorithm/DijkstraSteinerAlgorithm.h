@@ -46,19 +46,13 @@ class DijkstraSteinerAlgorithm
 public:
 	DijkstraSteinerAlgorithm(Instance const &instance) :
 			instance(instance),
-			labels(instance)
+			labels(instance),
+			heap(),
+			P(instance.graph.num_nodes())
 	{}
 
 	Coord calculate_minimum_steiner_tree_length()
 	{
-		heap::Heap<Coord, NodePlusTerminalSubset> heap(
-				[](NodePlusTerminalSubset const &lhs, NodePlusTerminalSubset const &rhs) {
-					return lhs < rhs;
-				}
-		);
-
-		std::vector<std::vector<TerminalSubset>> P(instance.graph.num_nodes());
-
 		auto T_minus_t = TerminalSubset::create_empty(instance.terminals);
 		for (auto const &terminal : instance.terminals) {
 			if (terminal != instance.t) {
@@ -79,7 +73,6 @@ public:
 
 
 		// Line 2
-		auto const empty_terminal_subset = TerminalSubset::create_empty(instance.terminals);
 		//Adding to P not necessary?
 		// -> Never add sth. with empty_subset to heap
 
@@ -89,6 +82,7 @@ public:
 			auto const v_I = heap.pop_minimum();
 			auto const &v = v_I.node;
 			auto const &I = v_I.subset;
+			auto const label_of_v_I = labels.get(v_I);
 
 			bool contained_in_P = false;
 			for (auto const &subset : P.at(instance.graph.get_index(v))) {
@@ -109,36 +103,49 @@ public:
 			}
 
 			// Line 6
-			for (auto const &neighbor : instance.graph.neighbors(v)) {
-				Coord new_l_value = labels.get(v_I) + v.distance(neighbor);
-				NodePlusTerminalSubset w_I = {neighbor, I};
-				if (new_l_value < labels.get(w_I)) {
-					update_l(heap, w_I, new_l_value);
-				}
-			}
+			update_neighbors(v, I, label_of_v_I);
 
 			// Line 7
 			auto const T_minus_I_and_t =
 					TerminalSubset::create_full(instance.terminals)
 							.minus(I)
 							.minus(TerminalSubset::create_singleton(instance.t, instance.terminals));
-			for (auto const &J : P.at(instance.graph.get_index(v))) {
-				if (T_minus_I_and_t.contains(J)) {
-					auto const I_union_J = TerminalSubset{I}.plus(J);
-					NodePlusTerminalSubset const v_I_union_J = {v, I_union_J};
-					Coord new_l_value =
-							std::min(
-									labels.get(v_I_union_J),
-									labels.get(v_I)
-									+ labels.get(NodePlusTerminalSubset{v, J})
-							);
-					update_l(heap, v_I_union_J, new_l_value);
-				}
-			}
+			update_subsets_in_P(T_minus_I_and_t, v, I, label_of_v_I);
+
 		}
 	}
 
 private:
+	void update_subsets_in_P(
+			TerminalSubset const &T_minus_I_and_t,
+			graph::Node const &v,
+			TerminalSubset const &I,
+			Coord const label_of_v_I
+	)
+	{
+		for (auto const &J : P.at(instance.graph.get_index(v))) {
+			if (T_minus_I_and_t.contains(J)) {
+				auto const I_union_J = TerminalSubset{I}.plus(J);
+				NodePlusTerminalSubset const v_I_union_J = {v, I_union_J};
+				Coord new_l_value =
+						std::min(
+								labels.get(v_I_union_J),
+								label_of_v_I + labels.get(NodePlusTerminalSubset{v, J})
+						);
+				update_l(heap, v_I_union_J, new_l_value);
+			}
+		}
+	}
+
+	void update_neighbors(graph::Node const& v, TerminalSubset const& I,Coord const label_of_v_I){
+		for (auto const &neighbor : instance.graph.neighbors(v)) {
+			Coord new_l_value = label_of_v_I + v.distance(neighbor);
+			NodePlusTerminalSubset const w_I = {neighbor, I};
+			if (new_l_value < labels.get(w_I)) {
+				update_l(heap, w_I, new_l_value);
+			}
+		}
+	}
 
 	void update_l(
 			heap::Heap<Coord, NodePlusTerminalSubset> &heap,
@@ -155,7 +162,7 @@ private:
 
 	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset) const
 	{
-		return bounding_box(node_plus_terminal_subset) / 2;
+		return bounding_box(node_plus_terminal_subset);
 	}
 
 	Coord bounding_box(NodePlusTerminalSubset const &node_plus_terminal_subset) const
@@ -172,11 +179,13 @@ private:
 			}
 			sum += max - min;
 		}
-		return sum * 2;
+		return sum;
 	}
 
 	Instance const &instance;
 	Labels labels;
+	heap::Heap<Coord, NodePlusTerminalSubset> heap;
+	std::vector<std::vector<TerminalSubset>> P;
 };
 
 }
