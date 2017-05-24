@@ -9,7 +9,7 @@
 #include "../TerminalSubset.h"
 #include "Labels.h"
 #include "lower_bound/BoundingBoxLowerBound.h"
-#include "lower_bound/MinimumSpanningTreeLowerBound.h"
+#include "lower_bound/OneTreeLowerBound.h"
 #include "Instance.h"
 
 namespace dijkstra_steiner_algorithm {
@@ -22,7 +22,7 @@ public:
 			labels(instance),
 			heap(),
 			lower_bound_oracle_bb(instance.terminals),
-			lower_bound_oracle_mst(instance.terminals)
+			lower_bound_oracle_one_tree(instance.terminals)
 	{}
 
 	Coord calculate_minimum_steiner_tree_length()
@@ -132,7 +132,7 @@ private:
 	Coord lower_bound(NodePlusTerminalSubset node_plus_terminal_subset)
 	{
 		return std::max(
-				lower_bound_oracle_mst.lower_bound(
+				lower_bound_oracle_one_tree.lower_bound(
 						node_plus_terminal_subset.node,
 						node_plus_terminal_subset.subset
 				),
@@ -147,7 +147,7 @@ private:
 	Labels labels;
 	heap::Heap<Coord, NodePlusTerminalSubset> heap;
 	lower_bound::BoundingBoxLowerBound lower_bound_oracle_bb;
-	lower_bound::MinimumSpanningTreeLowerBound lower_bound_oracle_mst;
+	lower_bound::OneTreeLowerBound lower_bound_oracle_one_tree;
 };
 
 }

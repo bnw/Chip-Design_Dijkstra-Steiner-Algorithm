@@ -16,14 +16,26 @@ public:
 			cache(pow2(terminals.size()), std::numeric_limits<Coord>::max())
 	{}
 
-	Coord lower_bound(graph::Node const &, TerminalSubset const &I) override
+	/**
+	 * Calculates the length of a minimum spanning tree on I, which is a valid
+	 * lower bound for the DijkstraSteinerAlgorithm.
+	 * Caches the result internally.
+	 */
+	Coord lower_bound(graph::Node const &v, TerminalSubset const &I) override
 	{
-		if(I.empty()){
-			return 0;
+		auto &cached_value = cache.at(I.get_index());
+		if (cached_value == std::numeric_limits<Coord>::max()) {
+			cached_value = calculate_minimum_spanning_tree_length(I);
 		}
+		return cached_value;
+	}
 
-		if (cache.at(I.get_index()) < std::numeric_limits<Coord>::max()) {
-			return cache.at(I.get_index());
+private:
+
+	Coord calculate_minimum_spanning_tree_length(TerminalSubset const &I) const
+	{
+		if (I.empty()) {
+			return 0;
 		}
 
 		std::vector<Coord> distances(terminals.size(), std::numeric_limits<Coord>::max());
@@ -71,11 +83,9 @@ public:
 			}
 		}
 
-		cache.at(I.get_index()) = total_length / 2;
 		return total_length / 2;
 	}
 
-private:
 	Terminal::Vector const &terminals;
 	std::vector<Coord> cache;
 };
