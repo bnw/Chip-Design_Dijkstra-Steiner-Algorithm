@@ -29,7 +29,7 @@ int main(int argc, const char *argv[])
 
 		dijkstra_steiner_algorithm::Instance const instance = dijkstra_steiner_algorithm::Instance::create(terminals);
 		dijkstra_steiner_algorithm::DijkstraSteinerAlgorithm algorithm(instance);
-		std::cout << "Result: " << algorithm.calculate_minimum_steiner_tree_length();
+		std::cout << "Result: " << algorithm.calculate_minimum_steiner_tree_length() << " - " << std::endl;
 	} catch (std::exception const &e) {
 		std::cout << "Exception orccured: " << e.what();
 		return 1;
