@@ -25,11 +25,15 @@ int main(int argc, const char *argv[])
 		}
 		auto const terminals = reader.read(input_file);
 
+		if(terminals.size() > MAX_NUM_TERMINALS){
+			throw std::runtime_error("Cannot handle instances with more than 20 terminals.");
+		}
+
 		dijkstra_steiner_algorithm::Instance const instance = dijkstra_steiner_algorithm::Instance::create(terminals);
 		dijkstra_steiner_algorithm::DijkstraSteinerAlgorithm algorithm(instance);
 		std::cout << algorithm.calculate_minimum_steiner_tree_length() << std::endl;
 	} catch (std::exception const &e) {
-		std::cout << "Exception orccured: " << e.what();
+		std::cout << "Exception occurred: " << e.what() << std::endl;
 		return 1;
 	}
 
