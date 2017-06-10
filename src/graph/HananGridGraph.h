@@ -5,47 +5,9 @@
 #include <vector>
 #include <assert.h>
 #include "../Position.h"
+#include "Node.h"
 
 namespace graph {
-
-class Node
-{
-public:
-	Node(std::array<std::vector<Coord>::const_iterator, NUM_DIM> const &coordinate_iterators)
-			: coordinate_iterators(coordinate_iterators)
-	{}
-
-	Position get_position() const
-	{
-		std::array<Coord, NUM_DIM> coordinates;
-		for (auto const dimension : DIMENSIONS) {
-			coordinates.at(dimension) = *coordinate_iterators.at(dimension);
-		}
-		return {coordinates};
-	}
-
-	auto const &get_coordinate_iterators() const
-	{
-		return coordinate_iterators;
-	}
-
-	bool operator==(Node const &rhs) const
-	{
-		return coordinate_iterators == rhs.coordinate_iterators;
-	}
-
-	Coord distance(Node const& other) const{
-		return get_position().distance(other.get_position());
-	}
-
-	bool operator<(Node const &rhs) const
-	{
-		return coordinate_iterators < rhs.coordinate_iterators;
-	}
-
-private:
-	std::array<std::vector<Coord>::const_iterator, NUM_DIM> coordinate_iterators;
-};
 
 class HananGridGraph
 {
@@ -65,6 +27,10 @@ public:
 
 	Node create_node(Position const &position) const;
 
+	/**
+	 * Calculates a unique index of a node.
+	 * Index is between 0 and num_nodes().
+	 */
 	size_t get_index(Node const &node) const
 	{
 		size_t sum = 0;
@@ -74,6 +40,7 @@ public:
 				   std::distance(coordinates(dimension).begin(), node.get_coordinate_iterators().at(dimension));
 			offset *= coordinates(dimension).size();
 		}
+		assert(sum < num_nodes());
 		return sum;
 	}
 
