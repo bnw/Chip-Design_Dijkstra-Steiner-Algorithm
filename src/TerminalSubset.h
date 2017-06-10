@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <assert.h>
+#include <bitset>
 #include "Terminal.h"
 #include "utils.h"
 
@@ -29,7 +30,7 @@ public:
 
 	TerminalSubset &minus(TerminalSubset const &subtrahend)
 	{
-		for (size_t i = 0; i < incidence_vector.size(); i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (subtrahend.incidence_vector[i]) {
 				incidence_vector[i] = false;
 			}
@@ -39,7 +40,7 @@ public:
 
 	TerminalSubset &plus(TerminalSubset const &addend)
 	{
-		for (size_t i = 0; i < incidence_vector.size(); i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (addend.incidence_vector[i]) {
 				incidence_vector[i] = true;
 			}
@@ -55,7 +56,7 @@ public:
 	size_t get_index() const
 	{
 		size_t index = 0;
-		for (size_t i = 0; i < incidence_vector.size(); i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (incidence_vector[i]) {
 				index += pow2(i);
 			}
@@ -70,7 +71,7 @@ public:
 
 	bool contains(TerminalSubset const &other) const
 	{
-		for (size_t i = 0; i < incidence_vector.size(); i++) {
+		for (size_t i = 0; i < length; i++) {
 			if (not incidence_vector[i]) {
 				if (other.incidence_vector[i]) {
 					return false;
@@ -86,12 +87,18 @@ public:
 
 	bool operator<(TerminalSubset const &rhs) const
 	{
-		return incidence_vector < rhs.incidence_vector;
+		for(size_t i = 0; i < length; i++){
+			if(incidence_vector[i] == rhs.incidence_vector[i]){
+				continue;
+			}
+			return incidence_vector[i] < rhs.incidence_vector[i];
+		}
+		return false;
 	}
 
 	size_t max_size() const
 	{
-		return incidence_vector.size();
+		return length;
 	}
 
 	//only used for unit tests
@@ -104,14 +111,14 @@ public:
 		std::vector<TerminalSubset> non_empty_subsets;
 
 		auto copy = *this;
-		for (size_t i = 0; i < incidence_vector.size(); i++) {
-			if (incidence_vector.at(i)) {
-				assert(incidence_vector.at(i) == copy.incidence_vector.at(i));
-				copy.incidence_vector.at(i) = false;
+		for (size_t i = 0; i < length; i++) {
+			if (incidence_vector[i]) {
+				assert(incidence_vector[i] == copy.incidence_vector[i]);
+				copy.incidence_vector[i] = false;
 				auto subsets_without_i = copy.create_nonempty_subsets();
 				append(non_empty_subsets, subsets_without_i);
 				for (auto &subset:subsets_without_i) {
-					subset.incidence_vector.at(i) = true;
+					subset.incidence_vector[i] = true;
 				}
 				append(non_empty_subsets, subsets_without_i);
 				auto const i_th_singleton = TerminalSubset{*this}.minus(copy);
@@ -125,27 +132,39 @@ public:
 
 	TerminalSubset complement() const{
 		TerminalSubset copy = *this;
-		for(size_t i = 0; i < incidence_vector.size(); i++){
-			copy.incidence_vector[i] = not copy.incidence_vector[i];
-		}
+		copy.incidence_vector.flip();
 		return copy;
 	}
 
-private:
+	bool empty() const{
+		return sum() == 0;
+	}
+
 	bool is_singleton() const
 	{
+		return sum() == 1;
+	}
+
+private:
+	size_t sum() const{
 		size_t sum = 0;
-		for (auto const b : incidence_vector) {
-			sum += b;
+		for(size_t i = 0; i <length; i++){
+			sum += incidence_vector[i];
 		}
-		return sum == 1;
+		return sum;
 	}
 
 	TerminalSubset(Terminal::Vector const &terminals, bool initial_value) :
-			incidence_vector(terminals.size(), initial_value)
-	{}
+			incidence_vector(),
+			length(terminals.size())
+	{
+		for(size_t i = 0; i < length; i++){
+			incidence_vector[i] = initial_value;
+		}
+	}
 
-	std::vector<bool> incidence_vector;
+	std::bitset<20> incidence_vector;
+	size_t length;
 };
 
 
