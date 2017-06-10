@@ -87,13 +87,7 @@ public:
 
 	bool operator<(TerminalSubset const &rhs) const
 	{
-		for(size_t i = 0; i < length; i++){
-			if(incidence_vector.test(i) == rhs.incidence_vector.test(i)){
-				continue;
-			}
-			return incidence_vector.test(i) < rhs.incidence_vector.test(i);
-		}
-		return false;
+		return incidence_vector.to_ulong() < rhs.incidence_vector.to_ulong();
 	}
 
 	size_t max_size() const
