@@ -5,7 +5,9 @@
 
 void print_usage(const char *argv[])
 {
-	std::cout << "Usage: " << argv[0] << " file" << std::endl;
+	std::cout
+			<< "Calculates the length of a minimum Steiner Tree for the given instance file."
+			<< "Usage: " << argv[0] << " file" << std::endl;
 }
 
 int main(int argc, const char *argv[])
@@ -23,13 +25,9 @@ int main(int argc, const char *argv[])
 		}
 		auto const terminals = reader.read(input_file);
 
-		for (auto const &terminal : terminals) {
-			std::cout << terminal.get_position().to_string() << std::endl;
-		}
-
 		dijkstra_steiner_algorithm::Instance const instance = dijkstra_steiner_algorithm::Instance::create(terminals);
 		dijkstra_steiner_algorithm::DijkstraSteinerAlgorithm algorithm(instance);
-		std::cout << "Result: " << algorithm.calculate_minimum_steiner_tree_length() << " - " << std::endl;
+		std::cout << algorithm.calculate_minimum_steiner_tree_length() << std::endl;
 	} catch (std::exception const &e) {
 		std::cout << "Exception orccured: " << e.what();
 		return 1;
