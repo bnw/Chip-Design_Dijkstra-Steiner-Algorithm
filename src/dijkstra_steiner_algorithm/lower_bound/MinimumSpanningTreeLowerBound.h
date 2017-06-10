@@ -17,8 +17,7 @@ public:
 	{}
 
 	/**
-	 * Calculates the length of a minimum spanning tree on I, which is a valid
-	 * lower bound for the DijkstraSteinerAlgorithm.
+	 * Calculates the length of a minimum spanning tree on I.
 	 * Caches the result internally.
 	 */
 	Coord lower_bound(graph::Node const &v, TerminalSubset const &I) override
