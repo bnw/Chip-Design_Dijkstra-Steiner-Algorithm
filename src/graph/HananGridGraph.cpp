@@ -56,5 +56,27 @@ HananGridGraph::Coordinates const &HananGridGraph::coordinates(Dimension const d
 	return dimension_coordinates.at(dimension);
 }
 
+size_t HananGridGraph::get_index(Node const &node) const
+{
+	size_t sum = 0;
+	size_t offset = 1;
+	for (auto const &dimension : DIMENSIONS) {
+		sum += offset *
+			   std::distance(coordinates(dimension).begin(), node.get_coordinate_iterators().at(dimension));
+		offset *= coordinates(dimension).size();
+	}
+	assert(sum < num_nodes());
+	return sum;
+}
+
+size_t HananGridGraph::num_nodes() const
+{
+	size_t num = 1;
+	for (auto const &dimension : DIMENSIONS) {
+		num *= coordinates(dimension).size();
+	}
+	return num;
+}
+
 
 }

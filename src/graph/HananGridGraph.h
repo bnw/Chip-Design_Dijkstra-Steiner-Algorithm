@@ -31,27 +31,9 @@ public:
 	 * Calculates a unique index of a node.
 	 * Index is between 0 and num_nodes().
 	 */
-	size_t get_index(Node const &node) const
-	{
-		size_t sum = 0;
-		size_t offset = 1;
-		for (auto const &dimension : DIMENSIONS) {
-			sum += offset *
-				   std::distance(coordinates(dimension).begin(), node.get_coordinate_iterators().at(dimension));
-			offset *= coordinates(dimension).size();
-		}
-		assert(sum < num_nodes());
-		return sum;
-	}
+	size_t get_index(Node const &node) const;
 
-	size_t num_nodes() const
-	{
-		size_t num = 1;
-		for (auto const &dimension : DIMENSIONS) {
-			num *= coordinates(dimension).size();
-		}
-		return num;
-	}
+	size_t num_nodes() const;
 private:
 	void add_feasible_position(Position const &position);
 
