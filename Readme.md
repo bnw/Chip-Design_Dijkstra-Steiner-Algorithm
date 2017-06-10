@@ -9,7 +9,7 @@ Compile
 
 Usage
 -----
-./task1 instance_file
+`./task1 instance_file`
 
 Tests
 -----
