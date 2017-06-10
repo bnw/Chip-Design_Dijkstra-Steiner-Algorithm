@@ -6,6 +6,8 @@
 
 using Coord = int;
 
+static const int MAX_NUM_TERMINALS = 20;
+
 enum Dimension
 {
 	DIM_X = 0,

@@ -163,7 +163,7 @@ private:
 		}
 	}
 
-	std::bitset<20> incidence_vector;
+	std::bitset<MAX_NUM_TERMINALS> incidence_vector;
 	size_t length;
 };
 
