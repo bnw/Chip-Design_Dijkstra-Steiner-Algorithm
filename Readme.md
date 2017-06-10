@@ -13,5 +13,7 @@ Usage
 
 Tests
 -----
+Requires an installation of the Boost Unit Test Framework that is discoverable by cmake.
+
 `cmake . && make tests`   
 `./tests`
