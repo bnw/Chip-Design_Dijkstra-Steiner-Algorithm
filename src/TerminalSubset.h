@@ -31,7 +31,7 @@ public:
 	TerminalSubset &minus(TerminalSubset const &subtrahend)
 	{
 		for (size_t i = 0; i < length; i++) {
-			if (subtrahend.incidence_vector[i]) {
+			if (subtrahend.incidence_vector.test(i)) {
 				incidence_vector[i] = false;
 			}
 		}
@@ -41,7 +41,7 @@ public:
 	TerminalSubset &plus(TerminalSubset const &addend)
 	{
 		for (size_t i = 0; i < length; i++) {
-			if (addend.incidence_vector[i]) {
+			if (addend.incidence_vector.test(i)) {
 				incidence_vector[i] = true;
 			}
 		}
@@ -57,7 +57,7 @@ public:
 	{
 		size_t index = 0;
 		for (size_t i = 0; i < length; i++) {
-			if (incidence_vector[i]) {
+			if (incidence_vector.test(i)) {
 				index += pow2(i);
 			}
 		}
@@ -72,8 +72,8 @@ public:
 	bool contains(TerminalSubset const &other) const
 	{
 		for (size_t i = 0; i < length; i++) {
-			if (not incidence_vector[i]) {
-				if (other.incidence_vector[i]) {
+			if (not incidence_vector.test(i)) {
+				if (other.incidence_vector.test(i)) {
 					return false;
 				}
 			}
@@ -88,10 +88,10 @@ public:
 	bool operator<(TerminalSubset const &rhs) const
 	{
 		for(size_t i = 0; i < length; i++){
-			if(incidence_vector[i] == rhs.incidence_vector[i]){
+			if(incidence_vector.test(i) == rhs.incidence_vector.test(i)){
 				continue;
 			}
-			return incidence_vector[i] < rhs.incidence_vector[i];
+			return incidence_vector.test(i) < rhs.incidence_vector.test(i);
 		}
 		return false;
 	}
@@ -112,8 +112,8 @@ public:
 
 		auto copy = *this;
 		for (size_t i = 0; i < length; i++) {
-			if (incidence_vector[i]) {
-				assert(incidence_vector[i] == copy.incidence_vector[i]);
+			if (incidence_vector.test(i)) {
+				assert(incidence_vector.test(i) == copy.incidence_vector.test(i));
 				copy.incidence_vector[i] = false;
 				auto subsets_without_i = copy.create_nonempty_subsets();
 				append(non_empty_subsets, subsets_without_i);
@@ -149,7 +149,7 @@ private:
 	size_t sum() const{
 		size_t sum = 0;
 		for(size_t i = 0; i <length; i++){
-			sum += incidence_vector[i];
+			sum += incidence_vector.test(i);
 		}
 		return sum;
 	}
