@@ -34,10 +34,11 @@ BOOST_AUTO_TEST_CASE(TestHananGridNodeIndices)
 	std::set<size_t> indices;
 	size_t max_index = 0;
 	for(auto const& node : nodes){
-		BOOST_TEST(0 == indices.count(graph.get_index(node)));
+		BOOST_TEST(0 == indices.count(graph.get_index(node)),  "Node index must be unique.");
 		indices.insert(graph.get_index(node));
 		max_index = std::max(max_index, graph.get_index(node));
 	}
+	BOOST_TEST(nodes.size() == graph.num_nodes());
 	BOOST_TEST(max_index <= nodes.size());
 }
 
@@ -53,19 +54,19 @@ BOOST_FIXTURE_TEST_CASE(TestHananGridNodeEquality, SimpleGrid)
 	BOOST_CHECK(b == b);
 }
 
-BOOST_FIXTURE_TEST_CASE(TestHananGrid1, SimpleGrid)
+BOOST_FIXTURE_TEST_CASE(TestHananGridNeighbors1, SimpleGrid)
 {
 	auto const center = graph.create_node({2, 2, 2});
 	BOOST_TEST(6 == graph.neighbors(center).size());
 }
 
-BOOST_FIXTURE_TEST_CASE(TestHananGrid2, SimpleGrid)
+BOOST_FIXTURE_TEST_CASE(TestHananGridNeighbors2, SimpleGrid)
 {
 	auto const corner = graph.create_node({1, 1, 1});
 	BOOST_TEST(3 == graph.neighbors(corner).size());
 }
 
-BOOST_FIXTURE_TEST_CASE(TestHananGrid3, SimpleGrid)
+BOOST_FIXTURE_TEST_CASE(TestHananGridNeighbors3, SimpleGrid)
 {
 	auto const center = graph.create_node({2, 2, 2});
 	auto const neighbors = graph.neighbors(center);
