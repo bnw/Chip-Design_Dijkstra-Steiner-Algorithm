@@ -14,17 +14,7 @@ class Heap
 private:
 	struct DataEntry
 	{
-		bool operator<(DataEntry const &rhs) const
-		{
-			// This is faster than std::tie
-			if (key < rhs.key) {
-				return true;
-			} else if (key > rhs.key) {
-				return false;
-			} else {
-				return data < rhs.data;
-			}
-		}
+		bool operator<(DataEntry const &rhs) const;
 
 		KeyType key;
 		DataType data;
@@ -35,32 +25,52 @@ public:
 			data()
 	{}
 
-	virtual void insert(KeyType const &key, DataType const &element)
-	{
-		data.insert({key, element});
-	};
+	virtual void insert(KeyType const &key, DataType const &element);
 
-	virtual void erase_if_exists(KeyType const &key, DataType const &element)
-	{
-		data.erase({key, element});
-	};
+	virtual void erase_if_exists(KeyType const &key, DataType const &element);
 
-	virtual bool contains(KeyType const &key, DataType const &element) const
-	{
-		return static_cast<bool>(data.count({key, element}));
-	}
-
-	virtual DataType pop_minimum()
-	{
-		assert(not data.empty());
-		DataType const minimum_element = data.begin()->data;
-		data.erase(data.begin());
-		return minimum_element;
-	};
+	virtual DataType pop_minimum();
 
 private:
 	std::set<DataEntry> data;
 };
+
+//// INLINE SECTION ////
+
+template<typename KeyType, typename DataType>
+bool Heap<KeyType, DataType>::DataEntry::operator<(heap::Heap<KeyType, DataType>::DataEntry const &rhs) const
+{
+	// This is faster than std::tie
+	if (key < rhs.key) {
+		return true;
+	} else if (key > rhs.key) {
+		return false;
+	} else {
+		return data < rhs.data;
+	}
+}
+
+template<typename KeyType, typename DataType>
+void Heap<KeyType, DataType>::insert(KeyType const &key, DataType const &element)
+{
+	data.insert({key, element});
+}
+
+template<typename KeyType, typename DataType>
+void Heap<KeyType, DataType>::erase_if_exists(KeyType const &key, DataType const &element)
+{
+	data.erase({key, element});
+}
+
+template<typename KeyType, typename DataType>
+DataType Heap<KeyType, DataType>::pop_minimum()
+{
+	assert(not data.empty());
+	DataType const minimum_element = data.begin()->data;
+	data.erase(data.begin());
+	return minimum_element;
+}
+
 
 }
 
