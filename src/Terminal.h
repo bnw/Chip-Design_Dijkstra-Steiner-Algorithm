@@ -18,7 +18,7 @@ public:
 
 	Position const &get_position() const;
 
-	Index const get_index() const;
+	Index get_index() const;
 
 private:
 	Position const position;

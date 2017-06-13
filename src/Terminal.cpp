@@ -20,7 +20,7 @@ Position const &Terminal::get_position() const
 	return position;
 }
 
-Terminal::Index const Terminal::get_index() const
+Terminal::Index Terminal::get_index() const
 {
 	return index;
 }

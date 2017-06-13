@@ -20,7 +20,7 @@ public:
 	 * Calculates the length of a minimum spanning tree on I.
 	 * Caches the result internally.
 	 */
-	Coord lower_bound(graph::Node const &v, TerminalSubset const &I) override
+	Coord lower_bound(graph::Node const &/*v*/, TerminalSubset const &I) override
 	{
 		auto &cached_value = cache.at(I.get_index());
 		if (cached_value == std::numeric_limits<Coord>::max()) {
